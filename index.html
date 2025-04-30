@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discord Role Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+    }
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Get Discord Role by Position</h1>
+
+  <label for="token">Bot Token:</label>
+  <input type="text" id="token" placeholder="Bot Token"/>
+
+  <label for="guild">Server ID:</label>
+  <input type="text" id="guild" placeholder="Guild ID"/>
+
+  <label for="position">Role Position (1 = Highest):</label>
+  <input type="number" id="position" placeholder="Role Position" min="1"/>
+
+  <button onclick="fetchRole()">Fetch Role</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function fetchRole() {
+      const token = document.getElementById("token").value;
+      const guild = document.getElementById("guild").value;
+      const position = document.getElementById("position").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!token || !guild || !position) {
+        resultDiv.innerText = "Please fill in all fields.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/getRoleByPosition/${token}/${guild}/${position}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.innerHTML = `
+            <strong>Role found:</strong><br>
+            ID: ${data.roleId}<br>
+          `;
+        } else {
+          resultDiv.innerText = `Error: ${data.error || "Unknown error"}`;
+        }
+      } catch (err) {
+        resultDiv.innerText = `Network error or API not reachable: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
