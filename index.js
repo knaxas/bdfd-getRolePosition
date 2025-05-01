@@ -3,7 +3,7 @@ const cors = require("cors");
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(cors());
 
