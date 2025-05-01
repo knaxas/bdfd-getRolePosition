@@ -7,6 +7,10 @@ const PORT = 3000;
 
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('API is running.');
+});
+
 app.get("/getRoleByPosition/:botToken/:guildId/:position", async (req, res) => {
   const { botToken, guildId, position } = req.params;
 
@@ -29,7 +33,6 @@ app.get("/getRoleByPosition/:botToken/:guildId/:position", async (req, res) => {
 
     if (!role) return res.status(404).json({ error: "Keine Rolle gefunden" });
 
-    // Nur die ID der Rolle zurückgeben
     res.json({
       roleId: role.id,
     });
