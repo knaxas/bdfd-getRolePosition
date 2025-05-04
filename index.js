@@ -11,15 +11,15 @@ app.get('/', (req, res) => {
   res.send('API is running.');
 });
 
-app.get("/getRoleByPosition/:botToken/:guildId/:position", async (req, res) => {
-  const { botToken, guildId, position } = req.params;
+app.get("/getRoleByPosition/:token/:guildId/:position", async (req, res) => {
+  const { token, guildId, position } = req.params;
 
   const client = new Client({
     intents: [GatewayIntentBits.Guilds],
   });
 
   try {
-    await client.login(botToken);
+    await client.login(token);
 
     const guild = await client.guilds.fetch(guildId);
     const roles = await guild.roles.fetch();
@@ -38,6 +38,33 @@ app.get("/getRoleByPosition/:botToken/:guildId/:position", async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: "Fehler beim Abrufen der Rolle", details: err.message });
+  } finally {
+    client.destroy();
+  }
+});
+
+
+app.get('/api/is-in-voice/:token/:guildId/:userId', async (req, res) => {
+  const { token, guildId, userId } = req.params;
+
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMembers,
+    ],
+  });
+
+  try {
+    await client.login(token);
+    const guild = await client.guilds.fetch(guildId);
+    const member = await guild.members.fetch(userId);
+    const inVoice = !!member.voice?.channel;
+
+    res.json({ inVoice });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Discord query failed', details: err.message });
   } finally {
     client.destroy();
   }
